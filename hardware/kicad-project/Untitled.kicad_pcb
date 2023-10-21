@@ -38,8 +38,8 @@
     (pad_to_mask_clearance 0)
     (solder_mask_min_width 0.12)
     (pcbplotparams
-      (layerselection 0x0001020_fffffff9)
-      (plot_on_all_layers_selection 0x0001020_80000001)
+      (layerselection 0x0021030_ffffffff)
+      (plot_on_all_layers_selection 0x0000000_00000000)
       (disableapertmacros false)
       (usegerberextensions false)
       (usegerberattributes true)
@@ -69,7 +69,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "../../Desktop/")
+      (outputdirectory "../outputs/")
     )
   )
 
