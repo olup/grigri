@@ -5016,7 +5016,7 @@
     (property "Reference" "R8" (at 157.48 34.29 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "1M" (at 157.48 39.37 90)
+    (property "Value" "634k" (at 157.48 39.37 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 158.75 38.608 90)
