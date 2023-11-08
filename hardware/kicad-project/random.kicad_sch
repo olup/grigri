@@ -1174,9 +1174,6 @@
   (junction (at 96.52 78.74) (diameter 0) (color 0 0 0 0)
     (uuid 84be8a02-fcf5-4128-83b8-987a93bda717)
   )
-  (junction (at 60.96 68.58) (diameter 0) (color 0 0 0 0)
-    (uuid 87770e72-9923-4c14-8126-cd6fc536fbb9)
-  )
   (junction (at 96.52 172.72) (diameter 0) (color 0 0 0 0)
     (uuid 8b7a0265-db14-4406-bd06-b9603bb46073)
   )
@@ -1230,6 +1227,9 @@
   )
   (junction (at 57.15 152.4) (diameter 0) (color 0 0 0 0)
     (uuid dfa6023d-e8ab-44c3-a994-5eab27259a98)
+  )
+  (junction (at 60.96 68.58) (diameter 0) (color 0 0 0 0)
+    (uuid e238be18-9885-4088-8067-3f363f93d555)
   )
   (junction (at 223.52 27.94) (diameter 0) (color 0 0 0 0)
     (uuid ebaf0aee-2eed-46f6-9889-a54ea86b611c)
@@ -1655,10 +1655,6 @@
     (stroke (width 0) (type default))
     (uuid 7f6b16af-9944-4f25-ace6-7b2cd787d39a)
   )
-  (wire (pts (xy 60.96 68.58) (xy 60.96 71.12))
-    (stroke (width 0) (type default))
-    (uuid 827187d0-5bda-4e63-a642-14a685a8e747)
-  )
   (wire (pts (xy 215.9 38.1) (xy 233.68 38.1))
     (stroke (width 0) (type default))
     (uuid 82f6be52-84b9-44e3-9dd5-2c9e943ca399)
@@ -1678,6 +1674,10 @@
   (wire (pts (xy 57.15 152.4) (xy 57.15 149.86))
     (stroke (width 0) (type default))
     (uuid 8ab07037-9c3e-4926-8a9e-0c003e81b9d3)
+  )
+  (wire (pts (xy 60.96 68.58) (xy 60.96 71.12))
+    (stroke (width 0) (type default))
+    (uuid 8d6a3253-9fa4-45b0-868e-005d3016b446)
   )
   (wire (pts (xy 96.52 104.14) (xy 99.06 104.14))
     (stroke (width 0) (type default))
@@ -2396,7 +2396,7 @@
   (symbol (lib_id "easyedaToKicad:GT-TC054C-H035-L1W") (at 148.59 110.49 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 1980f0b9-1c8f-45a6-84e1-85c45fda7a06)
-    (property "Reference" "U7" (at 148.59 104.14 0)
+    (property "Reference" "SW7" (at 148.59 104.14 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "GT-TC054C-H035-L1W" (at 148.59 106.68 0)
@@ -2418,7 +2418,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "U7") (unit 1)
+          (reference "SW7") (unit 1)
         )
       )
     )
@@ -2682,7 +2682,7 @@
   (symbol (lib_id "easyedaToKicad:K2-1109SP-C4SA") (at 147.32 33.02 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 4ce5f4dd-0773-43e1-b668-3eeaa855bb48)
-    (property "Reference" "SW4" (at 151.13 31.75 90)
+    (property "Reference" "SW1" (at 151.13 31.75 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "K2-1109SP-C4SA" (at 151.13 34.29 90)
@@ -2704,7 +2704,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "SW4") (unit 1)
+          (reference "SW1") (unit 1)
         )
       )
     )
@@ -2743,7 +2743,7 @@
   (symbol (lib_id "easyedaToKicad:K2-1109SP-C4SA") (at 147.32 45.72 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 561ba2fb-6b0f-4e73-9d51-6fc509a5b792)
-    (property "Reference" "SW5" (at 151.13 44.45 90)
+    (property "Reference" "SW2" (at 151.13 44.45 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "K2-1109SP-C4SA" (at 151.13 46.99 90)
@@ -2765,7 +2765,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "SW5") (unit 1)
+          (reference "SW2") (unit 1)
         )
       )
     )
@@ -2774,7 +2774,7 @@
   (symbol (lib_id "easyedaToKicad:GT-TC054C-H035-L1W") (at 148.59 96.52 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 59ac5454-4865-40d8-8f11-0032141642ce)
-    (property "Reference" "U5" (at 148.59 90.17 0)
+    (property "Reference" "SW6" (at 148.59 90.17 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "GT-TC054C-H035-L1W" (at 148.59 92.71 0)
@@ -2796,7 +2796,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "U5") (unit 1)
+          (reference "SW6") (unit 1)
         )
       )
     )
@@ -2939,7 +2939,7 @@
   (symbol (lib_id "easyedaToKicad:GT-TC054C-H035-L1W") (at 148.59 81.28 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 76c2420d-eac9-4e73-9f13-776bb6630616)
-    (property "Reference" "U4" (at 148.59 74.93 0)
+    (property "Reference" "SW5" (at 148.59 74.93 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "GT-TC054C-H035-L1W" (at 148.59 77.47 0)
@@ -2961,7 +2961,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "U4") (unit 1)
+          (reference "SW5") (unit 1)
         )
       )
     )
@@ -3507,7 +3507,7 @@
   (symbol (lib_id "easyedaToKicad:K2-1109SP-C4SA") (at 147.32 57.15 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid a99a7b8d-bf9a-4a86-bca4-4185ad9f90b3)
-    (property "Reference" "SW6" (at 151.13 55.88 90)
+    (property "Reference" "SW3" (at 151.13 55.88 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "K2-1109SP-C4SA" (at 151.13 58.42 90)
@@ -3529,7 +3529,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "SW6") (unit 1)
+          (reference "SW3") (unit 1)
         )
       )
     )
@@ -3693,7 +3693,7 @@
   (symbol (lib_id "easyedaToKicad:K2-1109SP-C4SA") (at 147.32 68.58 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid b707936e-4d7b-4838-a363-f240fe36524b)
-    (property "Reference" "SW7" (at 151.13 67.31 90)
+    (property "Reference" "SW4" (at 151.13 67.31 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Value" "K2-1109SP-C4SA" (at 151.13 69.85 90)
@@ -3715,7 +3715,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2/7a3aed0a-25fa-4aa7-ba6a-02a8683cfb94"
-          (reference "SW7") (unit 1)
+          (reference "SW4") (unit 1)
         )
       )
     )

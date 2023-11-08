@@ -2736,7 +2736,7 @@
   (symbol (lib_id "easyedaToKicad:TS-1187A-B-A-B") (at 267.97 110.49 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 0b01a89b-37d1-42f9-b091-d5e3fcfa0b7a)
-    (property "Reference" "SW1" (at 267.97 102.87 0)
+    (property "Reference" "SW9" (at 267.97 102.87 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "TS-1187A-B-A-B" (at 267.97 105.41 0)
@@ -2758,7 +2758,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2"
-          (reference "SW1") (unit 1)
+          (reference "SW9") (unit 1)
         )
       )
     )
@@ -3293,7 +3293,7 @@
   (symbol (lib_id "easyedaToKicad:TS-1187A-B-A-B") (at 240.03 128.27 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid 46aec444-0979-439e-815c-8075e79934fe)
-    (property "Reference" "SW2" (at 240.03 120.65 0)
+    (property "Reference" "SW10" (at 240.03 120.65 0)
       (effects (font (size 1.27 1.27)))
     )
     (property "Value" "TS-1187A-B-A-B" (at 240.03 123.19 0)
@@ -3315,7 +3315,7 @@
     (instances
       (project "Untitled"
         (path "/0de5ae84-7f75-4a5a-83a1-35d27fd1d8d2"
-          (reference "SW2") (unit 1)
+          (reference "SW10") (unit 1)
         )
       )
     )
