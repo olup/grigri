@@ -4,6 +4,7 @@
 
 #include "./BLE/manager.h"
 #include "./GlobalNav/GlobalNav.h"
+#include "./autoStop.h"
 #include "./define.h"
 #include "./display/display.h"
 #include "./file/file.h"
@@ -31,9 +32,12 @@ bool isPaused = false;
 void play_selection() {
   if (globalNav.isStoryNode()) {
     display_set_bl(0);
+    cancelShutoff();
   } else {
     display_set_bl(settings_get_brightness());
+    scheduleShutOff();
   }
+
   player_play(globalNav.getAudioPath().c_str());
   display_draw_bmp(globalNav.getImagePath().c_str());
 }
@@ -50,6 +54,8 @@ void audio_eof_mp3(const char* info) {  // end of file
 }
 
 void handleTapSelect(Button2& b) {
+  delaySwitchOff();
+
   if (isPaused) {
     player_togglePause();
     isPaused = false;
@@ -69,6 +75,8 @@ void handleTapSelect(Button2& b) {
 }
 
 void handleTapBack(Button2& b) {
+  delaySwitchOff();
+
   Serial.println("Action: Back");
   globalNav.goToBack();
 
@@ -76,6 +84,8 @@ void handleTapBack(Button2& b) {
 }
 
 void handleTapNext(Button2& b) {
+  delaySwitchOff();
+
   Serial.println("Action: Next");
 
   if (globalNav.isStoryNode() && player_isPlaying()) {
@@ -89,6 +99,8 @@ void handleTapNext(Button2& b) {
 }
 
 void handleTapPrevious(Button2& b) {
+  delaySwitchOff();
+
   Serial.println("Action: Previous");
 
   if (globalNav.isStoryNode() && player_isPlaying()) {
@@ -103,25 +115,23 @@ void handleTapPrevious(Button2& b) {
 }
 
 void handleVolumeUp(Button2& b) {
+  delaySwitchOff();
+
   player_setVolume(player_get_volume() + 1);
   settings_set_volume(player_get_volume());
 }
 void handleVolumeDown(Button2& b) {
+  delaySwitchOff();
+
   player_setVolume(player_get_volume() - 1);
   settings_set_volume(player_get_volume());
 }
 
-void handleSwitchOff(Button2& b) {
-  // todo: do we need to power things down ? (amp, sd card, lcd, etc.)
-  Serial.println("Switch off");
-  display_set_bl(0);
-  delay(5000);
-
-  esp_sleep_enable_ext0_wakeup(WAKE_UP_BTN, 0);
-  esp_deep_sleep_start();
-}
+void handleSwitchOff(Button2& b) { switchOff(); }
 
 void handleStartConfigMode(Button2& b) {
+  delaySwitchOff();
+
   Serial.println("Start config mode");
   bleManager.init();
 }
