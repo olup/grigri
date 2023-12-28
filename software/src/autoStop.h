@@ -5,15 +5,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-TickType_t xDelay5min = pdMS_TO_TICKS(1000 * 60 * 5);
+TickType_t xDelay5min = pdMS_TO_TICKS(1000 * 60 * 3);
 
 void switchOff() {
   // todo: do we need to power things down ? (amp, sd card, lcd, etc.)
   Serial.println("Switch off");
-  display_set_bl(0);
-
-  delay(5000);
-
   esp_sleep_enable_ext0_wakeup(WAKE_UP_BTN, 0);
   esp_deep_sleep_start();
 }

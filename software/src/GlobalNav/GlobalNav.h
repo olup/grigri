@@ -36,4 +36,5 @@ class GlobalNav {
 
   const bool isAutoPlay();
   const bool isStoryNode();
+  const bool isCoverNode();
 };

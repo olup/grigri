@@ -78,8 +78,12 @@ void handleTapBack(Button2& b) {
   delaySwitchOff();
 
   Serial.println("Action: Back");
-  globalNav.goToBack();
 
+  if (globalNav.isCoverNode()) {
+    return;
+  }
+
+  globalNav.goToBack();
   play_selection();
 }
 
@@ -127,7 +131,11 @@ void handleVolumeDown(Button2& b) {
   settings_set_volume(player_get_volume());
 }
 
-void handleSwitchOff(Button2& b) { switchOff(); }
+void handleSwitchOff(Button2& b) {
+  display_set_bl(0);
+  delay(3000);
+  switchOff();
+}
 
 void handleStartConfigMode(Button2& b) {
   delaySwitchOff();

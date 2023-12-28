@@ -102,3 +102,4 @@ const char *GlobalNav::getCurrentNodeUuid() {
 
 const bool GlobalNav::isAutoPlay() { return currentPack.isAutoPlay(); }
 const bool GlobalNav::isStoryNode() { return currentPack.isStoryNode(); }
+const bool GlobalNav::isCoverNode() { return currentPack.isCoverNode(); }
