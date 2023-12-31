@@ -2,12 +2,15 @@
 
 #include <ArduinoJson.h>
 
+#include <vector>
+
 #include "../StudioPack/StudioPack.h"
 
 class GlobalNav {
  private:
-  StaticJsonDocument<10 * 1000> doc;
-  JsonArray packUuids;
+  // array of uuid string
+
+  std::vector<String> packUuids;
   int currentPackIndex;
   StudioPack currentPack;
 

@@ -54,7 +54,9 @@ int display_get_bl() {
 void display_draw_bmp(const char *filename) {
   display_fill_black();
 
-  log("Displaying BMP at path: ", filename);
+  Serial.print("Displaying BMP at path: ");
+  Serial.println(filename);
+
   // is the filename a bmp?
   if ((filename[strlen(filename) - 1] != 'p') ||
       (filename[strlen(filename) - 2] != 'm') ||
@@ -127,10 +129,6 @@ void display_draw_bmp(const char *filename) {
       free(pixelData);
 
       tft.setSwapBytes(oldSwapBytes);
-
-      Serial.print("BMP Loaded in ");
-      Serial.print(millis() - startTime);
-      Serial.println(" ms");
     } else
       Serial.println("BMP format not recognized.");
   }

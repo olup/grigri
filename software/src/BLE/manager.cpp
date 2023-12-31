@@ -35,8 +35,6 @@ void handleRequest(const char* message) {
 
       enableWifi();
       std::vector<String> ssids = listSsids();
-      Serial.print("Got ssid list: ");
-      Serial.println(ssids.size());
 
       responseDoc["type"] = "response";
       responseDoc["id"] = commandId;
@@ -50,8 +48,6 @@ void handleRequest(const char* message) {
 
       std::string jsonString;
       serializeJson(responseDoc, jsonString);
-      Serial.println(jsonString.c_str());
-      Serial.println("end of get_wifi_list");
 
       bleManager.sendUpdate(jsonString.c_str());
       disableWiFi();
@@ -66,7 +62,6 @@ void handleRequest(const char* message) {
 
       Serial.print("Connecting to ");
       Serial.println(ssid);
-      Serial.println(key);
 
       enableWifi();
       connectToWiFi(ssid, key);

@@ -157,6 +157,8 @@ void buttons_loop() {
 void setup() {
   Serial.begin(115200);
 
+  printWakeupReason();
+
   // disable radio for power saving
   disableWiFi();
   bleManager.switchOff();
@@ -199,17 +201,9 @@ void setup() {
 
   // initialize navigation
   String jsonPath = mergeSegments(SOURCE_DIR, "/", "packsIndex.json", nullptr);
-  String json;
-  int result = fs_read_file(jsonPath.c_str(), json);
-
-  if (result != 0) {
-    Serial.println("Error reading file");
-    return;
-  }
-
   String packsDirectoryPath = mergeSegments(SOURCE_DIR, "/", "packs", nullptr);
 
-  globalNav.init(json.c_str(), packsDirectoryPath.c_str());
+  globalNav.init(jsonPath.c_str(), packsDirectoryPath.c_str());
 
   play_selection();
 }

@@ -1,22 +1,12 @@
 #include "GlobalNav.h"
 
-#include "../StudioPack/StudioPack.h"
 #include "../file/file.h"
 #include "../utils/utils.h"
 
 void GlobalNav::initCurrentPack() {
-  const char *packUuid = packUuids[currentPackIndex];
-  String currentPackJsonPath =
-      mergeSegments(packsPaths, "/", packUuid, "/", "story.json", nullptr);
-  String json;
-  int result = fs_read_file(currentPackJsonPath.c_str(), json);
-  if (result != 0) {
-    Serial.println("Error reading file");
-    return;
-  }
-  currentPack.init(json.c_str());
-  log("Current pack uuid is: ", currentPack.uuid);
-  log("Free ram", "");
+  const char *packUuid = packUuids.at(currentPackIndex).c_str();
+  String currentPackPath = mergeSegments(packsPaths, "/", packUuid, nullptr);
+  currentPack.init(currentPackPath.c_str());
 }
 
 GlobalNav::~GlobalNav() {
@@ -25,13 +15,23 @@ GlobalNav::~GlobalNav() {
   }
 }
 
-void GlobalNav::init(const char *packIndexJson,
+void GlobalNav::init(const char *packIndexPath,
                      const char *packsPathsArgument) {
   Serial.println("Init global nav");
+
+  // read packindex and deserialize json
+  String packIndexJson;
+  int result = fs_read_file(packIndexPath, packIndexJson);
+  if (result != 0) {
+    Serial.println("Error reading file");
+    return;
+  }
+
   packsPaths = strdup(packsPathsArgument);
-  log("Packs path: ", packsPaths);
 
   // deserialize the json
+  DynamicJsonDocument doc = DynamicJsonDocument(1000);
+
   DeserializationError err = deserializeJson(doc, packIndexJson);
   if (err) {
     Serial.print(F("deserializeJson() failed with code "));
@@ -39,7 +39,10 @@ void GlobalNav::init(const char *packIndexJson,
   }
 
   // get the stageNodes array from the doc
-  packUuids = doc.as<JsonArray>();
+  JsonArray packUuidsJson = doc.as<JsonArray>();
+  for (JsonVariant packUuidJson : packUuidsJson) {
+    packUuids.push_back(packUuidJson.as<String>());
+  }
 
   currentPackIndex = 0;
   initCurrentPack();
@@ -85,16 +88,18 @@ void GlobalNav::goToNext() {
   }
 
   u_int nextPackIndex = currentPackIndex + 1;
+
   if (nextPackIndex >= packUuids.size()) {
     nextPackIndex = 0;
   }
 
   currentPackIndex = nextPackIndex;
+
   initCurrentPack();
 }
 
 const char *GlobalNav::getCurrentPackUuid() {
-  return packUuids[currentPackIndex].as<const char *>();
+  return packUuids.at(currentPackIndex).c_str();
 }
 const char *GlobalNav::getCurrentNodeUuid() {
   return currentPack.getCurrentNodeUuid();
