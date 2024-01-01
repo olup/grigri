@@ -133,9 +133,10 @@ void handleVolumeDown(Button2& b) {
   settings_set_volume(player_get_volume());
 }
 
+void handlePreSwitchOff(Button2& b) { display_set_bl(0); }
+
 void handleSwitchOff(Button2& b) {
-  display_set_bl(0);
-  delay(3000);
+  delay(100);
   switchOff();
 }
 
@@ -182,7 +183,8 @@ void setup() {
 
   btn5.begin(BTN_5);
   btn5.setLongClickTime(3000);
-  btn5.setLongClickDetectedHandler(handleSwitchOff);
+  btn5.setLongClickHandler(handleSwitchOff);
+  btn5.setLongClickDetectedHandler(handlePreSwitchOff);
 
   // switch on config mode (enable bluetooth)
   btn5.setDoubleClickHandler(handleStartConfigMode);
