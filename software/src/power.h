@@ -2,6 +2,7 @@
 
 #include "./display/display.h"
 #include "define.h"
+#include "driver/rtc_io.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -10,6 +11,9 @@ TickType_t xDelay5min = pdMS_TO_TICKS(1000 * 60 * 3);
 void switchOff() {
   // todo: do we need to power things down ? (amp, sd card, lcd, etc.)
   Serial.println("Switch off");
+  rtc_gpio_pullup_en(WAKE_UP_BTN);
+  rtc_gpio_pulldown_dis(WAKE_UP_BTN);
+
   esp_sleep_enable_ext0_wakeup(WAKE_UP_BTN, 0);
   esp_deep_sleep_start();
 }

@@ -4,11 +4,11 @@
 
 #include "./BLE/manager.h"
 #include "./GlobalNav/GlobalNav.h"
-#include "./autoStop.h"
 #include "./define.h"
 #include "./display/display.h"
 #include "./file/file.h"
 #include "./player/player.h"
+#include "./power.h"
 #include "./settings/settings.h"
 #include "./utils/utils.h"
 #include "./wifi/wifi.h"

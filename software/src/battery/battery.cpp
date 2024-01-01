@@ -6,7 +6,6 @@ void battery_init() {
   // set battery pin as input
   pinMode(BATTERY_READ, INPUT);
   // setup pin battery charging stat
-  pinMode(BATTERY_CHARGING_STAT, INPUT_PULLUP);
 }
 
 // rea battery level from adc
@@ -31,5 +30,3 @@ uint16_t get_battery_level_percent() {
   // set battery level
   return battery_level;
 }
-
-bool is_battery_charging() { return !!digitalRead(BATTERY_CHARGING_STAT); }
