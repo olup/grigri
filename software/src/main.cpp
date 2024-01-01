@@ -12,6 +12,8 @@
 #include "./settings/settings.h"
 #include "./utils/utils.h"
 #include "./wifi/wifi.h"
+#include "soc/rtc_cntl_reg.h"
+#include "soc/soc.h"
 
 #define SOURCE_DIR "/grigri"
 #define PACKS_DIR "packs/"
@@ -155,6 +157,8 @@ void buttons_loop() {
 }
 
 void setup() {
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  // disable brownout detector
+
   Serial.begin(115200);
 
   printWakeupReason();
