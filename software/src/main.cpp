@@ -41,7 +41,7 @@ void play_selection() {
   }
 
   player_play(globalNav.getAudioPath().c_str());
-  display_draw_bmp(globalNav.getImagePath().c_str());
+  display_draw_image(globalNav.getImagePath().c_str());
 }
 
 void audio_eof_mp3(const char* info) {  // end of file

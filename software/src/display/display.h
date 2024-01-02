@@ -8,4 +8,4 @@ void display_fill_black();
 void display_init();
 void display_set_bl(int power);
 int display_get_bl();
-void display_draw_bmp(const char *filename);
+void display_draw_image(const char *filename);
