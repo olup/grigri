@@ -53,17 +53,6 @@ int display_get_bl() {
   return power;
 }
 
-void display_draw_image(const char *filename) {
-  // check file extension
-  if (strstr(filename, ".bmp") != nullptr) {
-    draw_bmp(filename);
-  } else if (strstr(filename, ".jpg") != nullptr) {
-    draw_jpeg(filename);
-  } else if (strstr(filename, ".jpeg") != nullptr) {
-    draw_jpeg(filename);
-  }
-}
-
 void draw_bmp(const char *filename) {
   display_fill_black();
 
@@ -234,4 +223,15 @@ void draw_jpeg(const char *filename) {
   }
 
   tft.setSwapBytes(swapBytes);
+}
+
+void display_draw_image(const char *filename) {
+  // check file extension
+  if (strstr(filename, ".bmp") != nullptr) {
+    draw_bmp(filename);
+  } else if (strstr(filename, ".jpg") != nullptr) {
+    draw_jpeg(filename);
+  } else if (strstr(filename, ".jpeg") != nullptr) {
+    draw_jpeg(filename);
+  }
 }
