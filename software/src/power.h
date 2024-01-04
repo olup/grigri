@@ -11,6 +11,9 @@ TickType_t xDelay5min = pdMS_TO_TICKS(1000 * 60 * 3);
 void switchOff() {
   // todo: do we need to power things down ? (amp, sd card, lcd, etc.)
   Serial.println("Switch off");
+  digitalWrite(AMP_EN, LOW);
+  gpio_hold_en((gpio_num_t)AMP_EN);
+
   rtc_gpio_pullup_en(WAKE_UP_BTN);
   rtc_gpio_pulldown_dis(WAKE_UP_BTN);
 
