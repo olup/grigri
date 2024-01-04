@@ -238,6 +238,6 @@ void display_draw_image(const char *filename) {
 
 void display_pause() {
   display_fill_black();
-  tft.fillRect(269, 122, 70, 164, TFT_WHITE);
-  tft.fillRect(370, 122, 70, 164, TFT_WHITE);
+  tft.fillRect(107, 69, 42, 100, TFT_WHITE);
+  tft.fillRect(169, 69, 42, 100, TFT_WHITE);
 }

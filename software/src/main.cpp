@@ -32,6 +32,7 @@ Button2 btn7;
 bool isPaused = false;
 
 void play_selection() {
+  isPaused = false;
   if (globalNav.isStoryNode()) {
     display_set_bl(0);
     cancelShutoff();
