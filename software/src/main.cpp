@@ -60,12 +60,15 @@ void handleTapSelect(Button2& b) {
 
   if (isPaused) {
     player_togglePause();
+    display_set_bl(0);
     isPaused = false;
     return;
   }
 
   if (player_isPlaying() && globalNav.isStoryNode()) {
     player_togglePause();
+    display_pause();
+    display_set_bl(settings_get_brightness());
     isPaused = true;
     return;
   }

@@ -235,3 +235,9 @@ void display_draw_image(const char *filename) {
     draw_jpeg(filename);
   }
 }
+
+void display_pause() {
+  display_fill_black();
+  tft.fillRect(269, 122, 70, 164, TFT_WHITE);
+  tft.fillRect(370, 122, 70, 164, TFT_WHITE);
+}

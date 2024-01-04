@@ -9,3 +9,4 @@ void display_init();
 void display_set_bl(int power);
 int display_get_bl();
 void display_draw_image(const char *filename);
+void display_pause();
