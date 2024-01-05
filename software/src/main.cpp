@@ -127,13 +127,13 @@ void handleTapPrevious(Button2& b) {
 void handleVolumeUp(Button2& b) {
   delaySwitchOff();
 
-  player_setVolume(player_get_volume() + 1);
+  player_setVolume(player_get_volume() + 10);
   settings_set_volume(player_get_volume());
 }
 void handleVolumeDown(Button2& b) {
   delaySwitchOff();
 
-  player_setVolume(player_get_volume() - 1);
+  player_setVolume(player_get_volume() - 10);
   settings_set_volume(player_get_volume());
 }
 

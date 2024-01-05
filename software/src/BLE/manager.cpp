@@ -115,7 +115,7 @@ void handleRequest(const char* message) {
       responseDoc["payload"]["sd"]["total"] = fs_sd_card_total_space();
       responseDoc["payload"]["sd"]["used"] = fs_sd_card_used_space();
       responseDoc["payload"]["volume"] = player_get_volume();
-      responseDoc["payload"]["backlight"] = settings_get_brightness();
+      responseDoc["payload"]["brightness"] = settings_get_brightness();
 
       bool isWifiConnected = WiFi.status() == WL_CONNECTED;
       responseDoc["payload"]["wifi"]["connected"] = isWifiConnected;
@@ -134,8 +134,28 @@ void handleRequest(const char* message) {
       serializeJson(responseDoc, jsonString);
       bleManager.sendUpdate(jsonString.c_str());
     }
+
+    if (strcmp(commandName, "set_status") == 0) {
+      const char* key = doc["payload"]["key"].as<const char*>();
+      const u_int16_t value = doc["payload"]["value"].as<const u_int16_t>();
+
+      if (strcmp(key, "brightness") == 0) {
+        display_set_bl(value);
+        settings_set_brightness(value);
+      }
+
+      if (strcmp(key, "volume") == 0) {
+        settings_set_volume(value);
+        player_setVolume(value);
+      }
+
+      responseDoc["id"] = commandId;
+      std::string jsonString;
+      serializeJson(responseDoc, jsonString);
+      bleManager.sendUpdate(jsonString.c_str());
+    }
   }
-}
+};
 
 void handleRequestTask(void* pvParameters) {
   Serial.println("Handling request task");
@@ -145,7 +165,7 @@ void handleRequestTask(void* pvParameters) {
   handleRequest(message);
   free((void*)message);
   vTaskDelete(NULL);
-}
+};
 
 void MyCallbacks::onWrite(BLECharacteristic* pCharacteristic) {
   std::string value = pCharacteristic->getValue();

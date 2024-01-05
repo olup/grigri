@@ -12,7 +12,8 @@ void player_init() {
   pinMode(AMP_EN, OUTPUT);
   digitalWrite(AMP_EN, HIGH);
   audio.setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
-  audio.setVolume(21);
+  audio.setVolumeSteps(100);
+  audio.setVolume(50);
 }
 
 void player_stop() { audio.stopSong(); }
