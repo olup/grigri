@@ -33,8 +33,9 @@ void handleRequest(const char* message) {
     if (strcmp(commandName, "get_wifi_list") == 0) {
       Serial.println("get_wifi_list");
 
-      enableWifi();
-      std::vector<String> ssids = listSsids();
+      wifiModule.turnOnWiFi();
+      std::vector<std::pair<String, bool>> ssids =
+          wifiModule.listAvailableNetworks();
 
       responseDoc["type"] = "response";
       responseDoc["id"] = commandId;
@@ -42,7 +43,8 @@ void handleRequest(const char* message) {
 
       int index = 0;
       for (const auto& ssid : ssids) {
-        responseDoc["payload"]["ssids"][index] = ssid.c_str();
+        responseDoc["payload"]["ssids"][index]["ssid"] = ssid.first.c_str();
+        responseDoc["payload"]["ssids"][index]["known"] = ssid.second;
         index++;
       }
 
@@ -50,7 +52,7 @@ void handleRequest(const char* message) {
       serializeJson(responseDoc, jsonString);
 
       bleManager.sendUpdate(jsonString.c_str());
-      disableWiFi();
+      wifiModule.turnOffWiFi();
     }
 
     if (strcmp(commandName, "do_wifi_connect") == 0) {
@@ -63,97 +65,103 @@ void handleRequest(const char* message) {
       Serial.print("Connecting to ");
       Serial.println(ssid);
 
-      enableWifi();
-      connectToWiFi(ssid, key);
+      wifiModule.turnOnWiFi();
 
-      int retries = 0;
-      while (WiFi.status() != WL_CONNECTED && retries < 50) {
-        delay(500);
-        Serial.print(".");
-        retries++;
-      }
+      bool connectionSuccess = false;
 
-      if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("Failed to connect to WiFi");
+      if (key == nullptr) {
+        // get list of known networks
+        std::vector<std::pair<String, bool>> ssids =
+            wifiModule.listAvailableNetworks();
+
+        // find the networ and connect to it
+        for (const auto& ssidPair : ssids) {
+          if (ssidPair.first == ssid && ssidPair.second) {
+            connectionSuccess = wifiModule.connectToKnownWiFi(ssid);
+            break;
+          }
+        }
       } else {
-        Serial.println("Connected to WiFi");
+        connectionSuccess = wifiModule.connectToWiFi(ssid, key);
+      }
 
+      if (connectionSuccess) {
         web_server_init();
-
-        responseDoc["type"] = "response";
-        responseDoc["id"] = commandId;
-        responseDoc["payload"]["success"] = true;
-
-        std::string jsonString;
-        serializeJson(responseDoc, jsonString);
-
-        bleManager.sendUpdate(jsonString.c_str());
       }
-    }
 
-    if (strcmp(commandName, "do_wifi_disconnect") == 0) {
-      Serial.println("do_wifi_disconnect");
-      disableWiFi();
-
-      // reponse
+      responseDoc["type"] = "response";
       responseDoc["id"] = commandId;
-      responseDoc["payload"]["success"] = "true";
-      std::string jsonString;
-      serializeJson(responseDoc, jsonString);
-      bleManager.sendUpdate(jsonString.c_str());
-    }
-
-    if (strcmp(commandName, "get_status") == 0) {
-      Serial.println("get_status");
-
-      uint32_t ram = ESP.getFreeHeap();
-      uint16_t battery = get_battery_level_percent();
-
-      responseDoc["id"] = commandId;
-      responseDoc["payload"]["battery"]["levelPercent"] = battery;
-      responseDoc["payload"]["ram"] = ram;
-      responseDoc["payload"]["sd"]["total"] = fs_sd_card_total_space();
-      responseDoc["payload"]["sd"]["used"] = fs_sd_card_used_space();
-      responseDoc["payload"]["volume"] = player_get_volume();
-      responseDoc["payload"]["brightness"] = settings_get_brightness();
-
-      bool isWifiConnected = WiFi.status() == WL_CONNECTED;
-      responseDoc["payload"]["wifi"]["connected"] = isWifiConnected;
-      if (isWifiConnected) {
-        responseDoc["payload"]["wifi"]["ssid"] = WiFi.SSID();
-
-        IPAddress ipAddress = WiFi.localIP();
-        String ip = String(ipAddress[0]) + String(".") + String(ipAddress[1]) +
-                    String(".") + String(ipAddress[2]) + String(".") +
-                    String(ipAddress[3]);
-
-        responseDoc["payload"]["wifi"]["ip"] = WiFi.localIP().toString();
-      }
+      responseDoc["payload"]["success"] = connectionSuccess;
 
       std::string jsonString;
       serializeJson(responseDoc, jsonString);
+
       bleManager.sendUpdate(jsonString.c_str());
     }
+  }
 
-    if (strcmp(commandName, "set_status") == 0) {
-      const char* key = doc["payload"]["key"].as<const char*>();
-      const u_int16_t value = doc["payload"]["value"].as<const u_int16_t>();
+  if (strcmp(commandName, "do_wifi_disconnect") == 0) {
+    Serial.println("do_wifi_disconnect");
+    wifiModule.turnOffWiFi();
 
-      if (strcmp(key, "brightness") == 0) {
-        display_set_bl(value);
-        settings_set_brightness(value);
-      }
+    // reponse
+    responseDoc["id"] = commandId;
+    responseDoc["payload"]["success"] = "true";
+    std::string jsonString;
+    serializeJson(responseDoc, jsonString);
+    bleManager.sendUpdate(jsonString.c_str());
+  }
 
-      if (strcmp(key, "volume") == 0) {
-        settings_set_volume(value);
-        player_setVolume(value);
-      }
+  if (strcmp(commandName, "get_status") == 0) {
+    Serial.println("get_status");
 
-      responseDoc["id"] = commandId;
-      std::string jsonString;
-      serializeJson(responseDoc, jsonString);
-      bleManager.sendUpdate(jsonString.c_str());
+    uint32_t ram = ESP.getFreeHeap();
+    uint16_t battery = get_battery_level_percent();
+
+    responseDoc["id"] = commandId;
+    responseDoc["payload"]["battery"]["levelPercent"] = battery;
+    responseDoc["payload"]["ram"] = ram;
+    responseDoc["payload"]["sd"]["total"] = fs_sd_card_total_space();
+    responseDoc["payload"]["sd"]["used"] = fs_sd_card_used_space();
+    responseDoc["payload"]["volume"] = player_get_volume();
+    responseDoc["payload"]["brightness"] = settings_get_brightness();
+
+    bool isWifiConnected = WiFi.status() == WL_CONNECTED;
+    responseDoc["payload"]["wifi"]["connected"] = isWifiConnected;
+    if (isWifiConnected) {
+      responseDoc["payload"]["wifi"]["ssid"] = WiFi.SSID();
+
+      IPAddress ipAddress = WiFi.localIP();
+      String ip = String(ipAddress[0]) + String(".") + String(ipAddress[1]) +
+                  String(".") + String(ipAddress[2]) + String(".") +
+                  String(ipAddress[3]);
+
+      responseDoc["payload"]["wifi"]["ip"] = WiFi.localIP().toString();
     }
+
+    std::string jsonString;
+    serializeJson(responseDoc, jsonString);
+    bleManager.sendUpdate(jsonString.c_str());
+  }
+
+  if (strcmp(commandName, "set_status") == 0) {
+    const char* key = doc["payload"]["key"].as<const char*>();
+    const u_int16_t value = doc["payload"]["value"].as<const u_int16_t>();
+
+    if (strcmp(key, "brightness") == 0) {
+      display_set_bl(value);
+      settings_set_brightness(value);
+    }
+
+    if (strcmp(key, "volume") == 0) {
+      settings_set_volume(value);
+      player_setVolume(value);
+    }
+
+    responseDoc["id"] = commandId;
+    std::string jsonString;
+    serializeJson(responseDoc, jsonString);
+    bleManager.sendUpdate(jsonString.c_str());
   }
 };
 

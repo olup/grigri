@@ -1,55 +1,86 @@
-#include <WiFi.h>
+// wifi_module.cpp
 
-#include <vector>
+#include "./wifi.h"
 
-std::vector<String> listSsids() {
-  // WiFi.begin();
+bool WiFiModule::init() { return preferences.begin("wifiModule", false); }
 
+std::vector<std::pair<String, bool>> WiFiModule::listAvailableNetworks() {
+  std::vector<std::pair<String, bool>> availableNetworks;
   int numNetworks = WiFi.scanNetworks();
-  std::vector<String> ssids;
-  ssids.reserve(5);  // we only want to return 5 networks
 
-  if (numNetworks == 0) {
-    Serial.println("No WiFi networks found");
-    return ssids;
-  }
-
-  Serial.print("Number of WiFi networks found: ");
-  Serial.println(numNetworks);
-
-  for (int i = 0; i < numNetworks && i < 5; i++) {
+  for (int i = 0; i < numNetworks; i++) {
     String ssid = WiFi.SSID(i);
-    ssids.push_back(ssid);
+    bool passwordStored = preferences.isKey(ssid.c_str());
 
-    Serial.print("SSID: ");
-    Serial.println(ssid.c_str());
+    availableNetworks.push_back(std::make_pair(ssid, passwordStored));
   }
 
-  return ssids;
+  return availableNetworks;
 }
 
-void enableWifi() { WiFi.mode(WIFI_STA); }
-
-bool connectToWiFi(const char* ssid, const char* password) {
+bool WiFiModule::connectToWiFi(const char* ssid, const char* password) {
   WiFi.begin(ssid, password);
 
-  int retries = 0;
-  while (WiFi.status() != WL_CONNECTED && retries < 50) {
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 50) {
     delay(500);
+    attempts++;
     Serial.print(".");
-    retries++;
   }
 
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Failed to connect to WiFi");
+  Serial.println("");
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi connected");
+
+    // Save the successful WiFi password to preferences
+    String passwordString(password);
+    size_t success = preferences.putString(ssid, passwordString);
+    Serial.print("Password stored: ");
+    Serial.println(success);
+
+    return true;
+  } else {
     return false;
   }
-
-  Serial.println("Connected to WiFi");
-  return true;
 }
 
-void disableWiFi() {
-  WiFi.disconnect(true);
+bool WiFiModule::connectToKnownWiFi(const char* ssid) {
+  Serial.print("Connecting to known wifi :");
+  Serial.println(ssid);
+
+  String storedPassword = preferences.getString(ssid, "");
+
+  if (storedPassword.length() > 0) {
+    return connectToWiFi(ssid, storedPassword.c_str());
+  } else {
+    return false;  // No stored password for the provided SSID
+  }
+}
+
+bool WiFiModule::tryConnectToAnyKnownWiFi() {
+  std::vector<std::pair<String, bool>> knownNetworks = listAvailableNetworks();
+
+  for (const auto& network : knownNetworks) {
+    if (connectToKnownWiFi(network.first.c_str())) {
+      return true;  // Connected to a known network
+    }
+  }
+
+  return false;  // Failed to connect to any known network
+}
+
+void WiFiModule::forgetNetwork(const char* ssid) { preferences.remove(ssid); }
+
+void WiFiModule::turnOnWiFi() {
+  WiFi.mode(WIFI_STA);
+  delay(100);
+}
+
+void WiFiModule::turnOffWiFi() {
   WiFi.mode(WIFI_OFF);
+  delay(100);
 }

@@ -20,6 +20,7 @@
 
 GlobalNav globalNav;
 BLEManager bleManager;
+WiFiModule wifiModule;
 
 Button2 btn1;
 Button2 btn2;
@@ -168,8 +169,10 @@ void setup() {
 
   printWakeupReason();
 
+  wifiModule.init();
+
   // disable radio for power saving
-  disableWiFi();
+  wifiModule.turnOffWiFi();
   bleManager.switchOff();
 
   // setup buttons
