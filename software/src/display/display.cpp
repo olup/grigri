@@ -31,7 +31,7 @@ void display_fill_black() { tft.fillScreen(TFT_BLACK); }
 
 void display_init() {
   // setup pwm for backlight
-  ledcSetup(0, 5000, 8);
+  ledcSetup(0, 16000, 8);
   ledcAttachPin(LCD_BL, 0);
 
   // setup tft
