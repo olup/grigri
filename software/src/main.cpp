@@ -168,7 +168,7 @@ void buttons_loop() {
 }
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  // disable brownout detector
+  // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);  // disable brownout detector
 
   Serial.begin(115200);
 
@@ -210,18 +210,21 @@ void setup() {
   // initialize components
   fs_init();
   settings_init();
-  display_init();
-  player_init();
 
-  // setup volume and backlight
-  display_set_bl(settings_get_brightness());
-  player_setVolume(settings_get_volume());
+  display_set_bl(0);
+  display_init();
+
+  player_init();
 
   // initialize navigation
   String jsonPath = mergeSegments(SOURCE_DIR, "/", "packsIndex.json", nullptr);
   String packsDirectoryPath = mergeSegments(SOURCE_DIR, "/", "packs", nullptr);
 
   globalNav.init(jsonPath.c_str(), packsDirectoryPath.c_str());
+
+  // setup volume and backlight
+  display_set_bl(settings_get_brightness());
+  player_setVolume(settings_get_volume());
 
   // load navigation position
   NavigationPosition navigationPosition = settings_get_navigation_position();
@@ -237,6 +240,7 @@ void setup() {
       player_togglePause();
       isPaused = true;
 
+      // display pause screen
       display_set_bl(settings_get_brightness());
       display_pause();
     }
