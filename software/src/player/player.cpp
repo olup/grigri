@@ -32,7 +32,7 @@ const bool player_isPlaying() { return audio.isRunning(); }
 
 void player_moveRelative(int seconds) {
   uint32_t newPosition = audio.getAudioCurrentTime() + seconds;
-  !audio.setAudioPlayPosition(newPosition);
+  audio.setAudioPlayPosition(newPosition);
 }
 
 uint32_t player_get_position() { return audio.getAudioCurrentTime(); }

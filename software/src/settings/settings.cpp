@@ -32,12 +32,18 @@ void settings_set_navigation_position(NavigationPosition navigationPosition) {
   preferences.putString("navPack", navigationPosition.packUuid);
   preferences.putString("navNode", navigationPosition.nodeUuid);
   preferences.putInt("navPos", navigationPosition.playbackPosition);
+
+  Serial.print("settings_get_navigation_position: ");
+  Serial.println(navigationPosition.playbackPosition);
 }
 
 NavigationPosition settings_get_navigation_position() {
   String navigationPackUuidStr = preferences.getString("navPack", "");
   String navigationNodeUuidStr = preferences.getString("navNode", "");
   int navigationPlaybackPosition = preferences.getInt("navPos", 0);
+
+  Serial.print("settings_get_navigation_position: ");
+  Serial.println(navigationPlaybackPosition);
 
   NavigationPosition navigationPosition = {
       navigationPackUuidStr, navigationNodeUuidStr, navigationPlaybackPosition};

@@ -237,6 +237,7 @@ void setup() {
 
     if (globalNav.isStoryNode()) {
       player_set_position(navigationPosition.playbackPosition);
+
       player_togglePause();
       isPaused = true;
 
