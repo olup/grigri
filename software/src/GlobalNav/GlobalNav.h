@@ -34,6 +34,8 @@ class GlobalNav {
   void goToPrevious();
   void goToNext();
 
+  void goTo(const char *packUuid, const char *nodeUuid);
+
   const char *getCurrentPackUuid();
   const char *getCurrentNodeUuid();
 

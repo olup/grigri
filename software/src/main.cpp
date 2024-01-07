@@ -142,11 +142,16 @@ void handlePreSwitchOff(Button2& b) { display_set_bl(0); }
 
 void handleSwitchOff(Button2& b) {
   delay(100);
+
+  settings_set_navigation_position(NavigationPosition{
+      globalNav.getCurrentPackUuid(), globalNav.getCurrentNodeUuid(),
+      player_get_position()});
+
   switchOff();
 }
 
 void handleStartConfigMode(Button2& b) {
-  delaySwitchOff();
+  cancelShutoff();
 
   Serial.println("Start config mode");
   bleManager.init();
@@ -218,7 +223,23 @@ void setup() {
 
   globalNav.init(jsonPath.c_str(), packsDirectoryPath.c_str());
 
-  play_selection();
+  // load navigation position
+  NavigationPosition navigationPosition = settings_get_navigation_position();
+
+  if (navigationPosition.packUuid.length() > 0 &&
+      navigationPosition.nodeUuid.length() > 0) {
+    globalNav.goTo(navigationPosition.packUuid.c_str(),
+                   navigationPosition.nodeUuid.c_str());
+    if (globalNav.isStoryNode()) {
+      play_selection();
+      player_set_position(navigationPosition.playbackPosition);
+      player_togglePause();
+      isPaused = true;
+      display_pause();
+    }
+  } else {
+    play_selection();
+  }
 }
 
 void loop() {

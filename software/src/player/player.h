@@ -14,7 +14,8 @@ const bool player_isPlaying();
 
 void player_moveRelative(int seconds);
 
-uint32_t player_getPosition();
+uint32_t player_get_position();
+void player_set_position(u_int32_t position);
 
 void player_loop();
 

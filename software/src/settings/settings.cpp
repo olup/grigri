@@ -26,3 +26,21 @@ void settings_set_brightness(int brightness) {
 }
 
 int settings_get_brightness() { return preferences.getUChar("brightness"); }
+
+// navigationPosition
+void settings_set_navigation_position(NavigationPosition navigationPosition) {
+  preferences.putString("navPack", navigationPosition.packUuid);
+  preferences.putString("navNode", navigationPosition.nodeUuid);
+  preferences.putInt("navPos", navigationPosition.playbackPosition);
+}
+
+NavigationPosition settings_get_navigation_position() {
+  String navigationPackUuidStr = preferences.getString("navPack", "");
+  String navigationNodeUuidStr = preferences.getString("navNode", "");
+  int navigationPlaybackPosition = preferences.getInt("navPos", 0);
+
+  NavigationPosition navigationPosition = {
+      navigationPackUuidStr, navigationNodeUuidStr, navigationPlaybackPosition};
+
+  return navigationPosition;
+}

@@ -98,6 +98,17 @@ void GlobalNav::goToNext() {
   initCurrentPack();
 }
 
+void GlobalNav::goTo(const char *packUuid, const char *nodeUuid) {
+  for (int i = 0; i < packUuids.size(); i++) {
+    if (packUuids.at(i).equals(packUuid)) {
+      currentPackIndex = i;
+      initCurrentPack();
+      currentPack.goTo(nodeUuid);
+      return;
+    }
+  }
+}
+
 const char *GlobalNav::getCurrentPackUuid() {
   return packUuids.at(currentPackIndex).c_str();
 }

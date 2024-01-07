@@ -35,7 +35,10 @@ void player_moveRelative(int seconds) {
   !audio.setAudioPlayPosition(newPosition);
 }
 
-uint32_t player_getPosition() { return audio.getAudioCurrentTime(); }
+uint32_t player_get_position() { return audio.getAudioCurrentTime(); }
+void player_set_position(uint32_t position) {
+  audio.setAudioPlayPosition(position);
+}
 
 void player_loop() { audio.loop(); }
 

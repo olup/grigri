@@ -164,4 +164,6 @@ class StudioPack {
     const char *currentNodeUuid = currentMenu.options[newPos].c_str();
     currentNode = findStageNode(currentNodeUuid);
   };
+
+  void goTo(const char *nodeUuid) { currentNode = findStageNode(nodeUuid); };
 };
