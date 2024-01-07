@@ -225,16 +225,19 @@ void setup() {
 
   // load navigation position
   NavigationPosition navigationPosition = settings_get_navigation_position();
-
   if (navigationPosition.packUuid.length() > 0 &&
       navigationPosition.nodeUuid.length() > 0) {
     globalNav.goTo(navigationPosition.packUuid.c_str(),
                    navigationPosition.nodeUuid.c_str());
+
+    play_selection();
+
     if (globalNav.isStoryNode()) {
-      play_selection();
       player_set_position(navigationPosition.playbackPosition);
       player_togglePause();
       isPaused = true;
+
+      display_set_bl(settings_get_brightness());
       display_pause();
     }
   } else {
