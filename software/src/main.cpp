@@ -30,15 +30,13 @@ Button2 btn5;
 Button2 btn6;
 Button2 btn7;
 
-bool isPaused = false;
-
 void play_selection() {
-  isPaused = false;
+  state_is_paused = false;
   if (globalNav.isStoryNode()) {
     display_set_bl(0);
     cancelShutoff();
   } else {
-    display_set_bl(settings_get_brightness());
+    display_set_bl(settings_brightness);
     scheduleShutOff();
   }
 
@@ -60,18 +58,18 @@ void audio_eof_mp3(const char* info) {  // end of file
 void handleTapSelect(Button2& b) {
   delaySwitchOff();
 
-  if (isPaused) {
+  if (state_is_paused) {
     player_togglePause();
     display_set_bl(0);
-    isPaused = false;
+    state_is_paused = false;
     return;
   }
 
   if (player_isPlaying() && globalNav.isStoryNode()) {
     player_togglePause();
     display_pause();
-    display_set_bl(settings_get_brightness());
-    isPaused = true;
+    display_set_bl(settings_brightness);
+    state_is_paused = true;
     return;
   }
 
@@ -127,33 +125,35 @@ void handleTapPrevious(Button2& b) {
 
 void handleVolumeUp(Button2& b) {
   delaySwitchOff();
-
-  player_setVolume(player_get_volume() + 10);
-  settings_set_volume(player_get_volume());
+  settings_volume = settings_volume + 10;
+  if (settings_volume > 100) settings_volume = 100;
+  player_setVolume(settings_volume);
 }
 void handleVolumeDown(Button2& b) {
   delaySwitchOff();
-
-  player_setVolume(player_get_volume() - 10);
-  settings_set_volume(player_get_volume());
+  settings_volume = settings_volume - 10;
+  if (settings_volume < 0) settings_volume = 0;
+  player_setVolume(settings_volume);
 }
 
 void handlePreSwitchOff(Button2& b) { display_set_bl(0); }
 
 void handleSwitchOff(Button2& b) {
   delay(100);
+  Serial.println("Switch off");
 
-  settings_set_navigation_position(NavigationPosition{
-      globalNav.getCurrentPackUuid(), globalNav.getCurrentNodeUuid(),
-      player_get_position()});
+  state_nav_pack = globalNav.getCurrentPackUuid();
+  state_nav_node = globalNav.getCurrentNodeUuid();
+  state_nav_pos = player_get_position();
+
+  settings_persist();
 
   switchOff();
 }
 
 void handleStartConfigMode(Button2& b) {
-  cancelShutoff();
-
   Serial.println("Start config mode");
+  state_is_connect_mode = true;
   bleManager.init();
 }
 
@@ -223,26 +223,24 @@ void setup() {
   globalNav.init(jsonPath.c_str(), packsDirectoryPath.c_str());
 
   // setup volume and backlight
-  display_set_bl(settings_get_brightness());
-  player_setVolume(settings_get_volume());
+  display_set_bl(settings_brightness);
+  player_setVolume(settings_volume);
 
   // load navigation position
-  NavigationPosition navigationPosition = settings_get_navigation_position();
-  if (navigationPosition.packUuid.length() > 0 &&
-      navigationPosition.nodeUuid.length() > 0) {
-    globalNav.goTo(navigationPosition.packUuid.c_str(),
-                   navigationPosition.nodeUuid.c_str());
+  if (settings_persist_nav && state_nav_pack.length() > 0 &&
+      state_nav_node.length() > 0) {
+    globalNav.goTo(state_nav_pack.c_str(), state_nav_node.c_str());
 
     play_selection();
 
     if (globalNav.isStoryNode()) {
-      player_set_position(navigationPosition.playbackPosition);
+      player_set_position(state_nav_pos);
 
       player_togglePause();
-      isPaused = true;
+      state_is_paused = true;
 
       // display pause screen
-      display_set_bl(settings_get_brightness());
+      display_set_bl(settings_brightness);
       display_pause();
     }
   } else {

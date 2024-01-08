@@ -123,8 +123,10 @@ void handleRequest(const char* message) {
     responseDoc["payload"]["ram"] = ram;
     responseDoc["payload"]["sd"]["total"] = fs_sd_card_total_space();
     responseDoc["payload"]["sd"]["used"] = fs_sd_card_used_space();
-    responseDoc["payload"]["volume"] = player_get_volume();
-    responseDoc["payload"]["brightness"] = settings_get_brightness();
+    responseDoc["payload"]["volume"] = settings_volume;
+    responseDoc["payload"]["brightness"] = settings_brightness;
+    responseDoc["payload"]["autoOff"] = settings_auto_off;
+    responseDoc["payload"]["persistNav"] = settings_persist_nav;
 
     bool isWifiConnected = WiFi.status() == WL_CONNECTED;
     responseDoc["payload"]["wifi"]["connected"] = isWifiConnected;
@@ -149,13 +151,21 @@ void handleRequest(const char* message) {
     const u_int16_t value = doc["payload"]["value"].as<const u_int16_t>();
 
     if (strcmp(key, "brightness") == 0) {
-      display_set_bl(value);
-      settings_set_brightness(value);
+      settings_brightness = value;
+      display_set_bl(settings_brightness);
     }
 
     if (strcmp(key, "volume") == 0) {
-      settings_set_volume(value);
-      player_setVolume(value);
+      settings_volume = value;
+      player_setVolume(settings_volume);
+    }
+
+    if (strcmp(key, "autoOff") == 0) {
+      settings_auto_off = value;
+    }
+
+    if (strcmp(key, "persistNav") == 0) {
+      settings_persist_nav = value;
     }
 
     responseDoc["id"] = commandId;

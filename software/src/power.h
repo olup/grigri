@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "./display/display.h"
+#include "./settings/settings.h"
 #include "define.h"
 #include "driver/rtc_io.h"
 #include "freertos/FreeRTOS.h"
@@ -25,8 +26,10 @@ void autoOffTask(void* parameter) {
   // Wait for the auto-off delay
   vTaskDelay(xDelay5min);
 
-  // stop the device
-  switchOff();
+  if (!state_is_connect_mode) {  // auto off is disabled in connect mode
+    // stop the device
+    switchOff();
+  }
 
   // Delete this task
   vTaskDelete(NULL);

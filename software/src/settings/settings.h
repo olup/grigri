@@ -1,19 +1,19 @@
+#pragma once
+
 #include <Preferences.h>
 
-struct NavigationPosition {
-  String packUuid;
-  String nodeUuid;
-  uint32_t playbackPosition;
-};
+extern int settings_volume;
+extern int settings_brightness;
+extern int settings_auto_off;
+extern int settings_persist_nav;
 
-void settings_init(void);
+extern String state_nav_pack;
+extern String state_nav_node;
+extern int state_nav_pos;
 
-void settings_set_volume(int volume);
-int settings_get_volume();
+extern bool state_is_paused;
+extern bool state_is_connect_mode;
 
-void settings_set_brightness(int brightness);
-int settings_get_brightness();
+void settings_init();
 
-void settings_set_navigation_position(NavigationPosition navigationPosition);
-
-NavigationPosition settings_get_navigation_position();
+void settings_persist();

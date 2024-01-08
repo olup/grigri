@@ -3,50 +3,38 @@
 
 Preferences preferences;
 
-void settings_init(void) {
+int settings_volume = 50;
+int settings_brightness = 50;
+int settings_auto_off = true;
+int settings_persist_nav = true;
+
+String state_nav_pack = "";
+String state_nav_node = "";
+int state_nav_pos = 0;
+
+bool state_is_paused = false;
+bool state_is_connect_mode = false;
+
+void settings_init() {
   Serial.println("settings_init");
   preferences.begin("settings", false);
 
-  if (!preferences.getUChar("volume")) {
-    preferences.putUChar("volume", 10);
-  }
-  if (!preferences.getUChar("brightness")) {
-    preferences.putUChar("brightness", 50);
-  }
+  // load values
+  settings_volume = preferences.getUChar("volume", 50);
+  settings_brightness = preferences.getUChar("brightness", 50);
+
+  state_nav_pack = preferences.getString("navPack", "");
+  state_nav_node = preferences.getString("navNode", "");
+  state_nav_pos = preferences.getInt("navPos", 0);
 }
 
-// volume
-void settings_set_volume(int volume) { preferences.putUChar("volume", volume); }
+void settings_persist() {
+  Serial.println("Saving settings");
 
-int settings_get_volume() { return preferences.getUChar("volume"); }
+  preferences.putUChar("volume", settings_volume);
+  preferences.putUChar("brightness", settings_brightness);
 
-// brightness
-void settings_set_brightness(int brightness) {
-  preferences.putUChar("brightness", brightness);
-}
-
-int settings_get_brightness() { return preferences.getUChar("brightness"); }
-
-// navigationPosition
-void settings_set_navigation_position(NavigationPosition navigationPosition) {
-  preferences.putString("navPack", navigationPosition.packUuid);
-  preferences.putString("navNode", navigationPosition.nodeUuid);
-  preferences.putInt("navPos", navigationPosition.playbackPosition);
-
-  Serial.print("settings_get_navigation_position: ");
-  Serial.println(navigationPosition.playbackPosition);
-}
-
-NavigationPosition settings_get_navigation_position() {
-  String navigationPackUuidStr = preferences.getString("navPack", "");
-  String navigationNodeUuidStr = preferences.getString("navNode", "");
-  int navigationPlaybackPosition = preferences.getInt("navPos", 0);
-
-  Serial.print("settings_get_navigation_position: ");
-  Serial.println(navigationPlaybackPosition);
-
-  NavigationPosition navigationPosition = {
-      navigationPackUuidStr, navigationNodeUuidStr, navigationPlaybackPosition};
-
-  return navigationPosition;
+  preferences.putString("navPack", state_nav_pack);
+  preferences.putString("navNode", state_nav_node);
+  preferences.putInt("navPos", state_nav_pos);
 }
