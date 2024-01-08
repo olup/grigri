@@ -35,7 +35,6 @@ void play_selection() {
 
   state_nav_pack = globalNav.getCurrentPackUuid();
   state_nav_node = globalNav.getCurrentNodeUuid();
-  state_nav_pos = player_get_position();
 
   if (globalNav.isStoryNode()) {
     display_set_bl(0);
@@ -71,6 +70,7 @@ void handleTapSelect(Button2& b) {
   }
 
   if (player_isPlaying() && globalNav.isStoryNode()) {
+    state_nav_pos = player_get_position();
     player_togglePause();
     display_pause();
     display_set_bl(settings_brightness);
