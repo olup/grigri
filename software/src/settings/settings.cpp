@@ -22,6 +22,8 @@ void settings_init() {
   // load values
   settings_volume = preferences.getUChar("volume", 50);
   settings_brightness = preferences.getUChar("brightness", 50);
+  settings_auto_off = preferences.getBool("autoOff", true);
+  settings_persist_nav = preferences.getBool("persistNav", true);
 
   state_nav_pack = preferences.getString("navPack", "");
   state_nav_node = preferences.getString("navNode", "");
@@ -33,6 +35,8 @@ void settings_persist() {
 
   preferences.putUChar("volume", settings_volume);
   preferences.putUChar("brightness", settings_brightness);
+  preferences.putBool("autoOff", settings_auto_off);
+  preferences.putBool("persistNav", settings_persist_nav);
 
   preferences.putString("navPack", state_nav_pack);
   preferences.putString("navNode", state_nav_node);
