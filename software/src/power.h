@@ -13,6 +13,8 @@ void switchOff() {
   // todo: do we need to power things down ? (amp, sd card, lcd, etc.)
   Serial.println("Switch off");
 
+  settings_persist();
+
   rtc_gpio_pullup_en(WAKE_UP_BTN);
   rtc_gpio_pulldown_dis(WAKE_UP_BTN);
 

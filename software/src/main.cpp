@@ -32,6 +32,11 @@ Button2 btn7;
 
 void play_selection() {
   state_is_paused = false;
+
+  state_nav_pack = globalNav.getCurrentPackUuid();
+  state_nav_node = globalNav.getCurrentNodeUuid();
+  state_nav_pos = player_get_position();
+
   if (globalNav.isStoryNode()) {
     display_set_bl(0);
     cancelShutoff();
@@ -141,13 +146,6 @@ void handlePreSwitchOff(Button2& b) { display_set_bl(0); }
 void handleSwitchOff(Button2& b) {
   delay(100);
   Serial.println("Switch off");
-
-  state_nav_pack = globalNav.getCurrentPackUuid();
-  state_nav_node = globalNav.getCurrentNodeUuid();
-  state_nav_pos = player_get_position();
-
-  settings_persist();
-
   switchOff();
 }
 
