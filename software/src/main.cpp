@@ -229,17 +229,16 @@ void setup() {
       state_nav_node.length() > 0) {
     globalNav.goTo(state_nav_pack.c_str(), state_nav_node.c_str());
 
-    play_selection();
-
     if (globalNav.isStoryNode()) {
-      player_set_position(state_nav_pos);
-
+      player_play(globalNav.getAudioPath().c_str(), 30);
       player_togglePause();
       state_is_paused = true;
 
       // display pause screen
       display_set_bl(settings_brightness);
       display_pause();
+    } else {
+      play_selection();
     }
   } else {
     play_selection();

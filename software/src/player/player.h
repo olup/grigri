@@ -6,7 +6,7 @@ void player_init();
 
 void player_stop();
 
-void player_play(const char *path);
+void player_play(const char *path, int32_t position = -1);
 
 void player_togglePause();
 

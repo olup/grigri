@@ -3,34 +3,51 @@
 #include "../file/file.h"
 #include "AsyncTCP.h"
 #include "ESPAsyncWebServer.h"
+#include "HTTPClient.h"
 
-AsyncWebServer server(8000);
+void download(String download_url, String path) {
+  Serial.println("Downloading file from url: " + download_url);
+  Serial.println("Saving file to path: " + path);
 
-void onPackUpload(AsyncWebServerRequest* request, String filename, size_t index,
-                  uint8_t* data, size_t len, bool final) {
-  static File fsUploadFile;
+  // Init SD card and create a new file
+  File file = SD_MMC.open(path, FILE_WRITE);
 
-  if (!index) {
-    // Create a new file to save the uploaded data
-    request->_tempFile = SD_MMC.open("/tmp-pack.zip", "w");
+  // Get file stream from internet
+  HTTPClient download_handler;
+  download_handler.begin(download_url);
+  int httpCode = download_handler.GET();
+  WiFiClient* stream = download_handler.getStreamPtr();
 
-    if (!request->_tempFile) {
-      Serial.println("Failed to open file for writing");
-      return request->send(500, "text/plain", "Internal Server Error");
+  // Download data and write into SD card
+  size_t downloaded_data_size = 0;
+  const size_t SIZE = download_handler.getSize();
+
+  Serial.print("Downloading file of size: ");
+  Serial.println(SIZE);
+
+  while (downloaded_data_size < SIZE) {
+    size_t available_data_size = stream->available();
+    if (available_data_size > 0) {
+      uint8_t* file_data = (uint8_t*)malloc(available_data_size);
+      Serial.print("1");
+
+      stream->readBytes(file_data, available_data_size);
+      Serial.print("2");
+      file.write(file_data, available_data_size);
+
+      Serial.print("3");
+      downloaded_data_size += available_data_size;
+      Serial.print("4");
+      free(file_data);
+
+      Serial.print(".");
     }
   }
 
-  // Write the data to the file
-  if (len) {
-    request->_tempFile.write(data, len);
-  }
-
-  // If this is the last part of the data, close the file
-  if (final) {
-    request->_tempFile.close();
-    Serial.println("File uploaded successfully");
-  }
+  file.close();
 }
+
+AsyncWebServer server(8000);
 
 void web_server_init() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -55,43 +72,22 @@ void web_server_init() {
     request->send(response);
   });
 
-  // request to list all files in a directory
-  server.on("/read-dir", HTTP_POST, [](AsyncWebServerRequest* request) {
-    Serial.println("Handling list request");
+  server.on("/install", HTTP_GET, [](AsyncWebServerRequest* request) {
+    Serial.println("Handling read request");
     Serial.println(request->url());
 
-    // get the directory path from the request
-    String directoryPath = request->arg("p");
+    // get the file name from the request
+    String fileUrl = request->arg("url");
 
-    // open the directory
-    File directory = SD_MMC.open(directoryPath);
+    // download file to sd
+    String packUuid = request->arg("uuid");
+    String packPath = "/tmp/" + packUuid + ".tar";
+    Serial.println("Downloading file to path: " + packPath);
 
-    // check if the directory opened successfully
-    if (!directory) {
-      request->send(404, "text/plain", "Directory not found");
-      return;
-    }
+    request->send(500, "text/plain", "Starting download");
 
-    // create a json array to store the file names
-    StaticJsonDocument<512> doc;
-    int index = 0;
-    while (File file = directory.openNextFile()) {
-      doc["files"][index] = file.name();
-      index++;
-    }
-
-    // close the directory
-    directory.close();
-
-    // send the response
-    String response;
-    serializeJson(doc, response);
-    request->send(200, "application/json", response);
+    download(fileUrl, packPath);
   });
-
-  server.on(
-      "/packs/install", HTTP_POST,
-      [](AsyncWebServerRequest* request) { request->send(200); }, onPackUpload);
 
   server.onNotFound([](AsyncWebServerRequest* request) {
     if (request->method() == HTTP_OPTIONS) {

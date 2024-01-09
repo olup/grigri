@@ -39,3 +39,5 @@
 #define LED_RGB_RED 15
 #define LED_RGB_GREEN 17
 #define LED_RGB_BLUE 16
+
+#define AUDIO_LOG 1

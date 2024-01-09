@@ -18,8 +18,9 @@ void player_init() {
 
 void player_stop() { audio.stopSong(); }
 
-void player_play(const char *path) {
+void player_play(const char *path, int32_t position) {
   player_stop();
+  Serial.print("Playing with seek  :");
   audio.connecttoFS(SD_MMC, path);
 }
 
@@ -55,5 +56,13 @@ void audio_bitrate(const char *info) {
   Serial.println(info);
 }
 
-void player_setVolume(uint8_t volume) { audio.setVolume(volume); }
+void player_setVolume(uint8_t volume) {
+  // int drop = 0;
+  // if (volume > 50) {
+  //   drop = map(volume, 50, 100, 0, -10);
+  // }
+  // audio.setTone(drop, drop, 0);
+
+  audio.setVolume(volume);
+}
 uint8_t player_get_volume() { return audio.getVolume(); }
