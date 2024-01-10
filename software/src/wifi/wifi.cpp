@@ -25,7 +25,7 @@ bool WiFiModule::connectToWiFi(const char* ssid, const char* password) {
   Serial.println(ssid);
 
   int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 50) {
+  while (WiFi.status() != WL_CONNECTED && attempts < 100) {
     delay(500);
     attempts++;
     Serial.print(".");

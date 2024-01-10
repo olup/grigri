@@ -1,5 +1,8 @@
 #pragma once
 
+#define DEST_FS_USES_SD_MMC
+#include <ESP32-targz.h>
+
 #include "../file/file.h"
 #include "AsyncTCP.h"
 #include "ESPAsyncWebServer.h"
@@ -47,6 +50,54 @@ void download(String download_url, String path) {
   file.close();
 }
 
+void untar(String from, String to) {
+  tarGzFS.begin();
+
+  TarUnpacker* TARUnpacker = new TarUnpacker();
+
+  TARUnpacker->haltOnError(
+      true);  // stop on fail (manual restart/reset required)
+  TARUnpacker->setTarVerify(
+      true);  // true = enables health checks but slows down the overall process
+  TARUnpacker->setupFSCallbacks(
+      targzTotalBytesFn,
+      targzFreeBytesFn);  // prevent the partition from exploding, recommended
+  TARUnpacker->setTarProgressCallback(
+      BaseUnpacker::defaultProgressCallback);  // prints the untarring progress
+                                               // for each individual file
+  TARUnpacker->setTarStatusProgressCallback(
+      BaseUnpacker::defaultTarStatusProgressCallback);  // print the filenames
+                                                        // as they're expanded
+  TARUnpacker->setTarMessageCallback(
+      BaseUnpacker::targzPrintLoggerCallback);  // tar log verbosity
+
+  if (!TARUnpacker->tarExpander(tarGzFS, from.c_str(), tarGzFS, to.c_str())) {
+    Serial.printf("tarExpander failed with return code #%d\n",
+                  TARUnpacker->tarGzGetError());
+  }
+}
+
+typedef struct {
+  String url;
+  String path;
+} TaskParameters;
+
+TaskParameters parameters;
+
+void downloadTask(void* pvParameters) {
+  Serial.println("Starting download task");
+  TaskParameters* parameters = (TaskParameters*)pvParameters;
+
+  Serial.println("Downloading file from url: " + parameters->url);
+  Serial.println("Saving file to path: " + parameters->path);
+
+  download(parameters->url.c_str(), parameters->path.c_str());
+  Serial.println("Finished download. Untaring file");
+  untar(parameters->path, "/grigri/packs/" + parameters->path);
+
+  vTaskDelete(NULL);
+}
+
 AsyncWebServer server(8000);
 
 void web_server_init() {
@@ -84,9 +135,14 @@ void web_server_init() {
     String packPath = "/tmp/" + packUuid + ".tar";
     Serial.println("Downloading file to path: " + packPath);
 
-    request->send(500, "text/plain", "Starting download");
+    request->send(200, "text/plain", "Starting download");
 
-    download(fileUrl, packPath);
+    // start downloading
+    parameters.url = fileUrl;
+    parameters.path = packPath;
+
+    xTaskCreate(downloadTask, "download", 10000, (void*)&parameters,
+                tskIDLE_PRIORITY, NULL);
   });
 
   server.onNotFound([](AsyncWebServerRequest* request) {
