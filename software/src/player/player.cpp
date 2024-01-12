@@ -4,8 +4,18 @@
 #include "./define.h"
 #include "./file/file.h"
 #include "Audio.h"
+#include "AudioCodecs/CodecMP3Helix.h"
+#include "AudioLibs/AudioSourceSDMMC.h"
+#include "AudioTools.h"
 
 Audio audio;
+
+const char *startFilePath = "/";
+const char *ext = "mp3";
+AudioSourceSDMMC source(startFilePath, ext);
+I2SStream i2s;
+MP3DecoderHelix decoder;
+AudioPlayer player(source, i2s, decoder);
 
 void player_init() {
   // enable amplifier

@@ -13,7 +13,7 @@ void download(String download_url, String path) {
   Serial.println("Saving file to path: " + path);
 
   // Init SD card and create a new file
-  File file = SD_MMC.open(path, FILE_WRITE);
+  File file = SD_MMC.open(path, FILE_WRITE, true);
 
   // Get file stream from internet
   HTTPClient download_handler;
@@ -32,20 +32,17 @@ void download(String download_url, String path) {
     size_t available_data_size = stream->available();
     if (available_data_size > 0) {
       uint8_t* file_data = (uint8_t*)malloc(available_data_size);
-      Serial.print("1");
-
       stream->readBytes(file_data, available_data_size);
-      Serial.print("2");
       file.write(file_data, available_data_size);
-
-      Serial.print("3");
       downloaded_data_size += available_data_size;
-      Serial.print("4");
       free(file_data);
-
       Serial.print(".");
     }
   }
+
+  // print file size
+  Serial.print("Downloaded file size: ");
+  Serial.println(file.size());
 
   file.close();
 }
@@ -79,7 +76,7 @@ void untar(String from, String to) {
 
 typedef struct {
   String url;
-  String path;
+  String uuid;
 } TaskParameters;
 
 TaskParameters parameters;
@@ -88,12 +85,15 @@ void downloadTask(void* pvParameters) {
   Serial.println("Starting download task");
   TaskParameters* parameters = (TaskParameters*)pvParameters;
 
-  Serial.println("Downloading file from url: " + parameters->url);
-  Serial.println("Saving file to path: " + parameters->path);
+  String tmpPath = "/tmp/" + parameters->uuid + ".tar";
+  String outPath = "/grigri/packs/";
 
-  download(parameters->url.c_str(), parameters->path.c_str());
+  Serial.println("Downloading file from url: " + parameters->url);
+  Serial.println("Saving file to path: " + tmpPath);
+
+  download(parameters->url.c_str(), tmpPath.c_str());
   Serial.println("Finished download. Untaring file");
-  untar(parameters->path, "/grigri/packs/" + parameters->path);
+  untar(tmpPath, "/grigri/packs/" + outPath);
 
   vTaskDelete(NULL);
 }
@@ -132,14 +132,13 @@ void web_server_init() {
 
     // download file to sd
     String packUuid = request->arg("uuid");
-    String packPath = "/tmp/" + packUuid + ".tar";
-    Serial.println("Downloading file to path: " + packPath);
 
     request->send(200, "text/plain", "Starting download");
 
     // start downloading
+    // Todod do not use a global variable
     parameters.url = fileUrl;
-    parameters.path = packPath;
+    parameters.uuid = packUuid;
 
     xTaskCreate(downloadTask, "download", 10000, (void*)&parameters,
                 tskIDLE_PRIORITY, NULL);

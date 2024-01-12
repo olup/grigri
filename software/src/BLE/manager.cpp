@@ -168,6 +168,8 @@ void handleRequest(const char* message) {
       settings_persist_nav = value;
     }
 
+    settings_persist();
+
     responseDoc["id"] = commandId;
     std::string jsonString;
     serializeJson(responseDoc, jsonString);
