@@ -30,7 +30,7 @@ void GlobalNav::init(const char *packIndexPath,
   packsPaths = strdup(packsPathsArgument);
 
   // deserialize the json
-  DynamicJsonDocument doc = DynamicJsonDocument(1000);
+  JsonDocument doc;
 
   DeserializationError err = deserializeJson(doc, packIndexJson);
   if (err) {

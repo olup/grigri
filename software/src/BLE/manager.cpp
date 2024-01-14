@@ -12,7 +12,7 @@ void handleRequest(const char* message) {
   Serial.println("Handling request");
   Serial.println(message);
 
-  StaticJsonDocument<512> doc;
+  JsonDocument doc;
   DeserializationError error = deserializeJson(doc, message);
 
   // Check for parsing errors
@@ -25,7 +25,7 @@ void handleRequest(const char* message) {
   const char* commandName = doc["name"].as<const char*>();
   const char* commandId = doc["id"].as<const char*>();
 
-  StaticJsonDocument<512> responseDoc;
+  JsonDocument responseDoc;
 
   // Handle the command based on the "n" key value
   if (commandName) {

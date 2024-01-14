@@ -61,7 +61,7 @@ class StudioPack {
       return;
     }
     // deserialize the json
-    DynamicJsonDocument doc = DynamicJsonDocument(10 * 10000);
+    JsonDocument doc;
     DeserializationError err = deserializeJson(doc, json);
     if (err) {
       Serial.print(F("deserializeJson() failed with code "));

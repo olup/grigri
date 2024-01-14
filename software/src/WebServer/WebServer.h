@@ -123,6 +123,40 @@ void web_server_init() {
     request->send(response);
   });
 
+  // get packs
+  server.on("/packs", HTTP_GET, [](AsyncWebServerRequest* request) {
+    Serial.println("Handling read request");
+    Serial.println(request->url());
+
+    JsonDocument responseDoc;
+
+    // get pack list
+    String packListJson;
+    fs_read_file("/grigri/packindex.json", packListJson);
+    std::vector<String> packUuids;
+    JsonDocument packListDoc;
+    DeserializationError err = deserializeJson(packListDoc, packListJson);
+
+    JsonDocument packDoc;
+
+    int index = 0;
+    for (JsonVariant v : packListDoc.as<JsonArray>()) {
+      String packUuid = v.as<String>();
+      String packDetailsJson;
+      fs_read_file(("/grigri/packs/" + packUuid + "/story.json").c_str(),
+                   packDetailsJson);
+      std::vector<String> packUuids;
+      DeserializationError err = deserializeJson(packDoc, packListJson);
+      responseDoc["packs"][index]["uuid"] = packUuid;
+      responseDoc["packs"][index]["name"] = packDoc["name"].as<String>();
+      responseDoc["packs"][index]["description"] =
+          packDoc["description"].as<String>();
+      index++;
+    }
+
+    request->send(200, "application/json", responseDoc.as<String>());
+  });
+
   server.on("/install", HTTP_GET, [](AsyncWebServerRequest* request) {
     Serial.println("Handling read request");
     Serial.println(request->url());
@@ -150,6 +184,18 @@ void web_server_init() {
       request->send(200);
     } else {
       request->send(404);
+    }
+  });
+
+  // handling POST requests body
+  server.onRequestBody([](AsyncWebServerRequest* request, uint8_t* data,
+                          size_t len, size_t index, size_t total) {
+    Serial.println("Handling read request");
+    Serial.println(request->url());
+
+    if (request->url() == "/packs/index" && request->method() == HTTP_POST) {
+      fs_write_file("/grigri/packindex.json", (char*)data);
+      request->send(200, "text/plain", "OK");
     }
   });
 
